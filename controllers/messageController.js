@@ -41,14 +41,16 @@ export const sendMessage = async (req, res) => {
         fileName: image.originalname,
       });
     }
-    media_url = imagekit.url({
-      path: response.filePath,
-      transformation: [
-        { quality: "auto" },
-        { format: "webp" },
-        { width: "1280" },
-      ],
-    });
+    if (response && response.filePath) {
+      media_url = imagekit.url({
+        path: response.filePath,
+        transformation: [
+          { quality: "auto" },
+          { format: "webp" },
+          { width: "1280" },
+        ],
+      });
+    }
     const message = await Message.create({
       from_user_id: userId,
       to_user_id,
@@ -86,9 +88,9 @@ export const getChatMessages = async (req, res) => {
 
     await Message.updateMany(
       { from_user_id: to_user_id, to_user_id: userId },
-      { senn: true }
+      { seen: true }
     );
-    res.json({ seccess: true, messages });
+    res.json({ success: true, messages });
   } catch (error) {
     console.log(error);
     res.json({ success: false, message: error.message });
